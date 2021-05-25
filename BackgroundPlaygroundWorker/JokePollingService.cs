@@ -1,3 +1,4 @@
+using BackgroundPlaygroundWorker.JokesApi;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
@@ -10,12 +11,12 @@ namespace BackgroundPlaygroundWorker
     internal sealed class JokePollingService : BackgroundService
     {
         private readonly ILogger<JokePollingService> _logger;
-        private readonly ChuckNorrisJokesApiService _jokesApiService;
+        private readonly JokesApiService _jokesApiService;
 
-        public JokePollingService(ILogger<JokePollingService> logger, ChuckNorrisJokesApiService jokesApiService)
+        public JokePollingService(ILogger<JokePollingService> logger, JokesApiService jokesApiService)
         {
-            _logger = logger;
-            _jokesApiService = jokesApiService;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _jokesApiService = jokesApiService ?? throw new ArgumentNullException(nameof(jokesApiService));
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
