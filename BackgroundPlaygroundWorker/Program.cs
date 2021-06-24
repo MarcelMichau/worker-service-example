@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System;
+using BackgroundPlaygroundWorker.ProtectedApi;
 
 namespace BackgroundPlaygroundWorker
 {
@@ -33,10 +34,14 @@ namespace BackgroundPlaygroundWorker
         internal static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .UseSerilog()
-                .ConfigureServices((_, services) =>
+                .ConfigureServices((hostBuilderContext, services) =>
                 {
-                    services.AddHostedService<JokePollingService>();
-                    services.ConfigureJokesApiService();
+                    //services.AddHostedService<JokePollingService>();
+                    //services.ConfigureJokesApiService();
+
+                    services.AddHostedService<ProtectedApiPollingService>();
+                    services.ConfigureProtectedApiService();
+                    services.Configure<AzureAdConfiguration>(hostBuilderContext.Configuration.GetSection("AzureAd"));
                 });
     }
 }
