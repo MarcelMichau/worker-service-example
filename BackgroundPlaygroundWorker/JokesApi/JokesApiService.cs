@@ -12,8 +12,7 @@ namespace BackgroundPlaygroundWorker.JokesApi
 
         public JokesApiService(HttpClient client)
         {
-            client.BaseAddress = new Uri("https://api.chucknorris.io/");
-            _client = client;
+            _client = client ?? throw new ArgumentNullException(nameof(client));
         }
 
         public async Task<JokesApiResponse> GetRandomJoke(CancellationToken cancellationToken)

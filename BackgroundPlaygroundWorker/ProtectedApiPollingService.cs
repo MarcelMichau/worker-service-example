@@ -1,11 +1,10 @@
+using BackgroundPlaygroundWorker.ProtectedApi;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Net.Http;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using BackgroundPlaygroundWorker.ProtectedApi;
 
 namespace BackgroundPlaygroundWorker
 {
@@ -14,7 +13,8 @@ namespace BackgroundPlaygroundWorker
         private readonly ILogger<ProtectedApiPollingService> _logger;
         private readonly ProtectedApiService _protectedApiService;
 
-        public ProtectedApiPollingService(ILogger<ProtectedApiPollingService> logger, ProtectedApiService protectedApiService)
+        public ProtectedApiPollingService(ILogger<ProtectedApiPollingService> logger,
+            ProtectedApiService protectedApiService)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _protectedApiService = protectedApiService ?? throw new ArgumentNullException(nameof(protectedApiService));
@@ -30,7 +30,7 @@ namespace BackgroundPlaygroundWorker
                 {
                     var weatherForecasts = await _protectedApiService.GetWeatherForecast(stoppingToken);
 
-                    _logger.LogInformation("Weather Forecast - {forecasts}", JsonSerializer.Serialize(weatherForecasts));
+                    _logger.LogInformation("Weather Forecast - {forecasts}", weatherForecasts);
                 }
                 catch (HttpRequestException ex)
                 {

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Polly;
 using Polly.Extensions.Http;
 using Polly.Retry;
@@ -15,9 +16,13 @@ namespace BackgroundPlaygroundWorker.JokesApi
             .Or<TimeoutRejectedException>()
             .WaitAndRetryAsync(3, _ => TimeSpan.FromSeconds(3));
 
-        internal static IServiceCollection ConfigureJokesApiService(this IServiceCollection services)
+        internal static IServiceCollection ConfigureJokesApiService(this IServiceCollection services,
+            IConfiguration configuration)
         {
-            services.AddHttpClient<JokesApiService>()
+            services.AddHttpClient<JokesApiService>(client =>
+                {
+                    client.BaseAddress = new Uri(configuration.GetValue<string>("JokesApi:BaseAddress"));
+                })
                 .AddPolicyHandler(RetryPolicy);
 
             return services;
