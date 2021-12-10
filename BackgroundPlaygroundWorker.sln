@@ -1,9 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31313.381
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackgroundPlaygroundWorker", "BackgroundPlaygroundWorker\BackgroundPlaygroundWorker.csproj", "{2AD37422-B6FD-4B88-B74A-1F463C25968F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BackgroundPlaygroundWorker", "BackgroundPlaygroundWorker\BackgroundPlaygroundWorker.csproj", "{2AD37422-B6FD-4B88-B74A-1F463C25968F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1FC9BB9F-F25A-4569-AFCA-3501F660DED3}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
