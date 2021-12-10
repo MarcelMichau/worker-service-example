@@ -7,25 +7,24 @@ using Polly.Timeout;
 using System;
 using System.Net.Http;
 
-namespace BackgroundPlaygroundWorker.JokesApi
+namespace BackgroundPlaygroundWorker.JokesApi;
+
+internal static class JokesApiServiceCollectionExtensions
 {
-    internal static class JokesApiServiceCollectionExtensions
+    private static readonly AsyncRetryPolicy<HttpResponseMessage> RetryPolicy = HttpPolicyExtensions
+        .HandleTransientHttpError()
+        .Or<TimeoutRejectedException>()
+        .WaitAndRetryAsync(3, _ => TimeSpan.FromSeconds(3));
+
+    internal static IServiceCollection ConfigureJokesApiService(this IServiceCollection services,
+        IConfiguration configuration)
     {
-        private static readonly AsyncRetryPolicy<HttpResponseMessage> RetryPolicy = HttpPolicyExtensions
-            .HandleTransientHttpError()
-            .Or<TimeoutRejectedException>()
-            .WaitAndRetryAsync(3, _ => TimeSpan.FromSeconds(3));
+        services.AddHttpClient<JokesApiService>(client =>
+            {
+                client.BaseAddress = new Uri(configuration.GetValue<string>("JokesApi:BaseAddress"));
+            })
+            .AddPolicyHandler(RetryPolicy);
 
-        internal static IServiceCollection ConfigureJokesApiService(this IServiceCollection services,
-            IConfiguration configuration)
-        {
-            services.AddHttpClient<JokesApiService>(client =>
-                {
-                    client.BaseAddress = new Uri(configuration.GetValue<string>("JokesApi:BaseAddress"));
-                })
-                .AddPolicyHandler(RetryPolicy);
-
-            return services;
-        }
+        return services;
     }
 }

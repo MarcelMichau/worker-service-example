@@ -6,38 +6,37 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BackgroundPlaygroundWorker
+namespace BackgroundPlaygroundWorker;
+
+internal sealed class JokePollingService : BackgroundService
 {
-    internal sealed class JokePollingService : BackgroundService
+    private readonly ILogger<JokePollingService> _logger;
+    private readonly JokesApiService _jokesApiService;
+
+    public JokePollingService(ILogger<JokePollingService> logger, JokesApiService jokesApiService)
     {
-        private readonly ILogger<JokePollingService> _logger;
-        private readonly JokesApiService _jokesApiService;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _jokesApiService = jokesApiService ?? throw new ArgumentNullException(nameof(jokesApiService));
+    }
 
-        public JokePollingService(ILogger<JokePollingService> logger, JokesApiService jokesApiService)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        while (!stoppingToken.IsCancellationRequested)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _jokesApiService = jokesApiService ?? throw new ArgumentNullException(nameof(jokesApiService));
-        }
+            _logger.LogInformation("Polling for new Chuck Norris joke at: {time}", DateTimeOffset.Now);
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            while (!stoppingToken.IsCancellationRequested)
+            try
             {
-                _logger.LogInformation("Polling for new Chuck Norris joke at: {time}", DateTimeOffset.Now);
+                var (id, value) = await _jokesApiService.GetRandomJoke(stoppingToken);
 
-                try
-                {
-                    var (id, value) = await _jokesApiService.GetRandomJoke(stoppingToken);
-
-                    _logger.LogInformation("New Joke - Joke ID: {jokeId} - {jokeValue}", id, value);
-                }
-                catch (HttpRequestException ex)
-                {
-                    _logger.LogError(ex, "Whoops, we could not get a joke this time!");
-                }
-
-                await Task.Delay(10000, stoppingToken);
+                _logger.LogInformation("New Joke - Joke ID: {jokeId} - {jokeValue}", id, value);
             }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError(ex, "Whoops, we could not get a joke this time!");
+            }
+
+            await Task.Delay(10000, stoppingToken);
         }
     }
 }

@@ -6,39 +6,38 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BackgroundPlaygroundWorker
+namespace BackgroundPlaygroundWorker;
+
+internal sealed class ProtectedApiPollingService : BackgroundService
 {
-    internal sealed class ProtectedApiPollingService : BackgroundService
+    private readonly ILogger<ProtectedApiPollingService> _logger;
+    private readonly ProtectedApiService _protectedApiService;
+
+    public ProtectedApiPollingService(ILogger<ProtectedApiPollingService> logger,
+        ProtectedApiService protectedApiService)
     {
-        private readonly ILogger<ProtectedApiPollingService> _logger;
-        private readonly ProtectedApiService _protectedApiService;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _protectedApiService = protectedApiService ?? throw new ArgumentNullException(nameof(protectedApiService));
+    }
 
-        public ProtectedApiPollingService(ILogger<ProtectedApiPollingService> logger,
-            ProtectedApiService protectedApiService)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        while (!stoppingToken.IsCancellationRequested)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _protectedApiService = protectedApiService ?? throw new ArgumentNullException(nameof(protectedApiService));
-        }
+            _logger.LogInformation("Polling for Weather at: {time}", DateTimeOffset.Now);
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            while (!stoppingToken.IsCancellationRequested)
+            try
             {
-                _logger.LogInformation("Polling for Weather at: {time}", DateTimeOffset.Now);
+                var weatherForecasts = await _protectedApiService.GetWeatherForecast(stoppingToken);
 
-                try
-                {
-                    var weatherForecasts = await _protectedApiService.GetWeatherForecast(stoppingToken);
-
-                    _logger.LogInformation("Weather Forecast - {forecasts}", weatherForecasts);
-                }
-                catch (HttpRequestException ex)
-                {
-                    _logger.LogError(ex, "Whoops, we could not get weather this time!");
-                }
-
-                await Task.Delay(10000, stoppingToken);
+                _logger.LogInformation("Weather Forecast - {forecasts}", weatherForecasts);
             }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError(ex, "Whoops, we could not get weather this time!");
+            }
+
+            await Task.Delay(10000, stoppingToken);
         }
     }
 }

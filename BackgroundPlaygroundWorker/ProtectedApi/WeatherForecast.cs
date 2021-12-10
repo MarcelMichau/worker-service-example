@@ -1,15 +1,14 @@
 ﻿using System;
 
-namespace BackgroundPlaygroundWorker.ProtectedApi
+namespace BackgroundPlaygroundWorker.ProtectedApi;
+
+internal record WeatherForecast
 {
-    internal record WeatherForecast
-    {
-        public DateTime Date { get; init; }
+    public DateTime Date { get; init; }
 
-        public int TemperatureC { get; init; }
+    public int TemperatureC { get; init; }
 
-        public int TemperatureF { get; init; }
+    public int TemperatureF { get; init; }
 
-        public string Summary { get; init; }
-    }
+    public string Summary { get; init; }
 }
