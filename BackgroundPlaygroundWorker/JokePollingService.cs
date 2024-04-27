@@ -8,16 +8,11 @@ using System.Threading.Tasks;
 
 namespace BackgroundPlaygroundWorker;
 
-internal sealed class JokePollingService : BackgroundService
+internal sealed class JokePollingService(ILogger<JokePollingService> logger, JokesApiService jokesApiService)
+    : BackgroundService
 {
-    private readonly ILogger<JokePollingService> _logger;
-    private readonly JokesApiService _jokesApiService;
-
-    public JokePollingService(ILogger<JokePollingService> logger, JokesApiService jokesApiService)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _jokesApiService = jokesApiService ?? throw new ArgumentNullException(nameof(jokesApiService));
-    }
+    private readonly ILogger<JokePollingService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly JokesApiService _jokesApiService = jokesApiService ?? throw new ArgumentNullException(nameof(jokesApiService));
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

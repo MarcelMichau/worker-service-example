@@ -6,14 +6,9 @@ using System.Threading.Tasks;
 
 namespace BackgroundPlaygroundWorker.JokesApi;
 
-internal sealed class JokesApiService
+internal sealed class JokesApiService(HttpClient client)
 {
-    private readonly HttpClient _client;
-
-    public JokesApiService(HttpClient client)
-    {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-    }
+    private readonly HttpClient _client = client ?? throw new ArgumentNullException(nameof(client));
 
     public async Task<JokesApiResponse> GetRandomJoke(CancellationToken cancellationToken)
     {

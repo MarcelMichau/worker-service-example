@@ -8,17 +8,13 @@ using System.Threading.Tasks;
 
 namespace BackgroundPlaygroundWorker;
 
-internal sealed class ProtectedApiPollingService : BackgroundService
+internal sealed class ProtectedApiPollingService(
+    ILogger<ProtectedApiPollingService> logger,
+    ProtectedApiService protectedApiService)
+    : BackgroundService
 {
-    private readonly ILogger<ProtectedApiPollingService> _logger;
-    private readonly ProtectedApiService _protectedApiService;
-
-    public ProtectedApiPollingService(ILogger<ProtectedApiPollingService> logger,
-        ProtectedApiService protectedApiService)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _protectedApiService = protectedApiService ?? throw new ArgumentNullException(nameof(protectedApiService));
-    }
+    private readonly ILogger<ProtectedApiPollingService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly ProtectedApiService _protectedApiService = protectedApiService ?? throw new ArgumentNullException(nameof(protectedApiService));
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
